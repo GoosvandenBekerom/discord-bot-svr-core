@@ -2,7 +2,7 @@
 
 namespace discord_svr_bot_core
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
