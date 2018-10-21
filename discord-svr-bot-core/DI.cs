@@ -1,10 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using discord_svr_bot_core.Discord;
+﻿using discord_svr_bot_core.Discord;
 using discord_svr_bot_core.Logging;
 using Discord.WebSocket;
 using Unity;
 using Unity.Injection;
-using Unity.Lifetime;
 using Unity.Resolution;
 
 namespace discord_svr_bot_core

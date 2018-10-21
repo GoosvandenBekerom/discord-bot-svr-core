@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using discord_svr_bot_core.Config;
 using discord_svr_bot_core.Discord;
 using discord_svr_bot_core.Discord.Entities;
@@ -16,8 +17,6 @@ namespace discord_svr_bot_core
             {
                 Token = ConfigStore.Get<string>("token")
             });
-
-            await Task.Delay(-1); // TODO REMOVE THIS
         }
     }
 }

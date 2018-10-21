@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
+using discord_svr_bot_core.Config;
 using discord_svr_bot_core.Discord.Entities;
+using discord_svr_bot_core.Discord.Entities.Commands;
 using discord_svr_bot_core.Logging;
 using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace discord_svr_bot_core.Discord
 {
@@ -11,21 +16,45 @@ namespace discord_svr_bot_core.Discord
     {
         private readonly DiscordSocketClient _client;
         private readonly Logger _logger;
+        private readonly CommandService _commands;
+        private readonly IServiceProvider _service;
 
         public Connection(DiscordSocketClient client, Logger logger)
         {
             _client = client;
             _logger = logger;
+            _commands = new CommandService();
+            _service = new ServiceCollection().BuildServiceProvider();
         }
 
         internal async Task ConnectAsync(BotConfig config)
         {
             _client.Log += OnDiscordLogMessage;
+            _client.MessageReceived += OnDiscordIncomingMessage;
+
+            // Discover all commands in this assembly
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
             await _client.LoginAsync(TokenType.Bot, config.Token);
             await _client.StartAsync();
+            
+            await Task.Delay(-1);
+        }
 
+        private async Task OnDiscordIncomingMessage(SocketMessage msg)
+        {
+            if (!(msg is SocketUserMessage message)) return;
 
+            int argPos = 0;
+            if (!(message.HasStringPrefix(ConfigStore.Get<string>("prefix"), ref argPos))) return;
+
+            _logger.Log($"Received command: {message.Content}");
+
+            var context = new CommandContext(_client, message);
+
+            var result = await _commands.ExecuteAsync(context, argPos, _service);
+            if (!result.IsSuccess)
+                await context.Channel.SendMessageAsync(result.ErrorReason);
         }
 
         private Task OnDiscordLogMessage(LogMessage message)
