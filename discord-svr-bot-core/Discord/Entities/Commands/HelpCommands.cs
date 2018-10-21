@@ -72,7 +72,7 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
             var builder = new EmbedBuilder()
             {
                 Color = new Color(114, 137, 218),
-                Description = $"Here are some commands like **{command}**"
+                Description = $"Hier heb je wat info over **{command}**, Paaz..."
             };
 
             foreach (var match in result.Commands)
