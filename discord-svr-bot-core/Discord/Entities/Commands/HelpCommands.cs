@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using discord_svr_bot_core.Config;
 using Discord;
 using Discord.Commands;
-using Unity.Interception.Utilities;
 
 namespace discord_svr_bot_core.Discord.Entities.Commands
 {
@@ -17,7 +15,7 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
             _service = service;
         }
 
-        [Command("help")]
+        [Command("help"), Summary("Display all available commands")]
         public async Task HelpAsync()
         {
             string prefix = ConfigStore.Get<string>("prefix");
@@ -38,8 +36,12 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
                     var parameters = cmd.Parameters.Count > 0
                         ? $"[{string.Join(", ", cmd.Parameters.Select(p => p.Name))}]"
                         : string.Empty;
+
+                    var summary = !string.IsNullOrEmpty(cmd.Summary)
+                        ? $"- {cmd.Summary}"
+                        : string.Empty;
                     
-                    description += $"{prefix}{cmd.Aliases.First()} {parameters}\n";
+                    description += $"{prefix}{cmd.Aliases.First()} {parameters} {summary}\n";
                 }
 
                 if (!string.IsNullOrWhiteSpace(description))
@@ -56,7 +58,7 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
             await ReplyAsync("", false, builder.Build());
         }
 
-        [Command("help")]
+        [Command("help"), Summary("Display detailed command")]
         public async Task HelpAsync(string command)
         {
             var result = _service.Search(Context, command);
