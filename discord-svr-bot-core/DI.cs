@@ -1,5 +1,6 @@
 ﻿using discord_svr_bot_core.Discord;
 using discord_svr_bot_core.Logging;
+using Discord.Commands;
 using Discord.WebSocket;
 using Unity;
 using Unity.Injection;
@@ -27,6 +28,7 @@ namespace discord_svr_bot_core
             _container.RegisterSingleton<ILogger, Logger>();
             _container.RegisterType<DiscordSocketConfig>(new InjectionFactory(i => SocketConfigFactory.Default));
             _container.RegisterSingleton<DiscordSocketClient>(new InjectionConstructor(typeof(DiscordSocketConfig)));
+            _container.RegisterSingleton<CommandService>(new InjectionFactory(i => CommandServiceFactory.Default));
         }
 
         public static T Resolve<T>()

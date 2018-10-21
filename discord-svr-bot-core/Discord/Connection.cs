@@ -19,11 +19,11 @@ namespace discord_svr_bot_core.Discord
         private readonly CommandService _commands;
         private readonly IServiceProvider _service;
 
-        public Connection(DiscordSocketClient client, Logger logger)
+        public Connection(DiscordSocketClient client, Logger logger, CommandService commands)
         {
             _client = client;
             _logger = logger;
-            _commands = new CommandService();
+            _commands = commands;
             _service = new ServiceCollection().BuildServiceProvider();
         }
 
@@ -37,6 +37,7 @@ namespace discord_svr_bot_core.Discord
 
             await _client.LoginAsync(TokenType.Bot, config.Token);
             await _client.StartAsync();
+            await _client.SetGameAsync("K is een Paaz!");
             
             await Task.Delay(-1);
         }
