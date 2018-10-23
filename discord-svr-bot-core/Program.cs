@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using discord_svr_bot_core.Config;
+using discord_svr_bot_core.Configuration;
 using discord_svr_bot_core.Discord;
 using discord_svr_bot_core.Discord.Entities;
 
@@ -15,8 +15,8 @@ namespace discord_svr_bot_core
             var connection = DI.Resolve<Connection>();
             await connection.ConnectAsync(new BotConfig
             {
-                Token = ConfigStore.Get<string>("token")
-            });
+                Token = DI.Resolve<Config>().Get<string>("token")
+        });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using discord_svr_bot_core.Config;
+using discord_svr_bot_core.Configuration;
 using Discord;
 using Discord.Commands;
 
@@ -9,16 +9,17 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
     public class HelpCommands : ModuleBase
     {
         private readonly CommandService _service;
+        private readonly string _prefix;
 
         public HelpCommands(CommandService service)
         {
             _service = service;
+            _prefix = DI.Resolve<Config>().Get<string>("prefix");
         }
 
         [Command("help"), Summary("Display all available commands")]
         public async Task HelpAsync()
         {
-            string prefix = ConfigStore.Get<string>("prefix");
             var builder = new EmbedBuilder()
             {
                 Color = new Color(114, 137, 218),
@@ -41,7 +42,7 @@ namespace discord_svr_bot_core.Discord.Entities.Commands
                         ? $"- {cmd.Summary}"
                         : string.Empty;
                     
-                    description += $"{prefix}{cmd.Aliases.First()} {parameters} {summary}\n";
+                    description += $"{_prefix}{cmd.Aliases.First()} {parameters} {summary}\n";
                 }
 
                 if (!string.IsNullOrWhiteSpace(description))

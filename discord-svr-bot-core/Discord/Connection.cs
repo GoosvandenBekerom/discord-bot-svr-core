@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using discord_svr_bot_core.Config;
+using discord_svr_bot_core.Configuration;
 using discord_svr_bot_core.Discord.Entities;
 using discord_svr_bot_core.Discord.Entities.Commands;
 using discord_svr_bot_core.Logging;
@@ -18,6 +18,7 @@ namespace discord_svr_bot_core.Discord
         private readonly Logger _logger;
         private readonly CommandService _commands;
         private readonly IServiceProvider _service;
+        private readonly string _prefix;
 
         public Connection(DiscordSocketClient client, Logger logger, CommandService commands)
         {
@@ -25,6 +26,7 @@ namespace discord_svr_bot_core.Discord
             _logger = logger;
             _commands = commands;
             _service = new ServiceCollection().BuildServiceProvider();
+            _prefix = DI.Resolve<Config>().Get<string>("prefix");
         }
 
         internal async Task ConnectAsync(BotConfig config)
@@ -47,7 +49,7 @@ namespace discord_svr_bot_core.Discord
             if (!(msg is SocketUserMessage message)) return;
 
             int argPos = 0;
-            if (!(message.HasStringPrefix(ConfigStore.Get<string>("prefix"), ref argPos))) return;
+            if (!(message.HasStringPrefix(_prefix, ref argPos))) return;
 
             _logger.Log($"Received command: {message.Content}");
 
