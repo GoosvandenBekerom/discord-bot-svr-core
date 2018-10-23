@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using discord_svr_bot_core.Configuration;
 using discord_svr_bot_core.Discord.Entities;
@@ -41,7 +42,7 @@ namespace discord_svr_bot_core.Discord
             await _client.StartAsync();
             await _client.SetGameAsync("K is een Paaz!");
             
-            await Task.Delay(-1);
+            await Task.Delay(-1, Program.EndOfApplication.Token);
         }
 
         private async Task OnDiscordIncomingMessage(SocketMessage msg)
