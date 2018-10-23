@@ -1,6 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using discord_svr_bot_core.Logging;
 using Discord;
@@ -45,12 +47,23 @@ namespace discord_svr_bot_core.Discord.Entities
 
             if (ConnectedChannels.TryGetValue(guild.Id, out var client))
             {
-                DI.Resolve<ILogger>().Log($"Starting playback of {path} in {guild.Name}");
+                var cts = new CancellationTokenSource();
+                var logger = DI.Resolve<ILogger>();
                 using (var ffmpeg = CreateProcess(path))
                 using (var stream = client.CreatePCMStream(AudioApplication.Voice))
                 {
-                    await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream);
-                    await stream.FlushAsync();
+                    try
+                    {
+                        logger.Log($"Starting playback of {path} in {guild.Name}");
+                        await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream, CancellationToken.None);
+                        cts.CancelAfter(2000); // Cancel flush if it hangs for 2 seconds
+                        await stream.FlushAsync(cts.Token);
+                    }
+                    catch (Exception)
+                    {
+                        logger.Warn("Streaming audio canceled");
+                        await channel.SendMessageAsync("Ik ben een Paaz, want dat kan ik niet uitspreken.");
+                    }
                 }
             }
         }
