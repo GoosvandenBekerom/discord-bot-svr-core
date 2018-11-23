@@ -299,6 +299,14 @@ namespace discord_svr_bot_core.Models.Giphy
             public Pagination pagination { get; set; }
             public Meta meta { get; set; }
         }
+        public class RootObject2
+        {
+            public Datum data { get; set; }
+            public Pagination pagination { get; set; }
+            public Meta meta { get; set; }
+        }
+
+        
 
 
     }
